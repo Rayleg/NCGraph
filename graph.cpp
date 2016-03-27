@@ -86,17 +86,28 @@ bool solve(const vector < vector < bool >  > &in, vector < vector < bool > > & o
 	for (int i = 0; i < size; i++) {
 		if (g[i] == 0)
 			if (dfs(g, out, i, path))
-				return true;
+				return false;
 	}
-	return false;
+	for (int i = 0; i < size; i++) {
+		for (int j = i + 1; j < size; j++)
+			if (out[i][j] && out[j][i])
+				out[i][j] = false;
+	}
+	return true;
 	// Change out
 }
 
 int main( int argc, char ** argv ) {
 	vector < vector < bool > > matr;
 	const char * filename = "matr";
-	ifstream ifs(filename);
+	ifstream ifs;
 
+
+	if (argc > 1) {
+		filename = argv[1];
+		cout << "File with graph matrix %s" << filename << endl;
+	}
+	ifs.open(filename);
 	if (!ifs.is_open()) {
 		cerr << "Cannot open file " << filename << endl;
 		return 0;
@@ -115,6 +126,9 @@ int main( int argc, char ** argv ) {
 	}
 	ifs.close();
 	int result = solve(matr, matr);
-	cout << result << endl;
+	if (result)
+		cout << "The task have solution" << endl;
+	else
+		cout << "The task does not have solution" << endl;
 	return 0;
 }
