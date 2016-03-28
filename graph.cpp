@@ -36,7 +36,6 @@ bool dfs( vector< int > &g, vector < vector < bool > > & out, int cur, vector< p
 
 	if (!path.empty())
 		prev = path.back().first;
-	printf("Watch %d node\n", cur);
 	if (g[cur] == 1) {
 		g[cur] = 0;
 		return true;
@@ -49,14 +48,12 @@ bool dfs( vector< int > &g, vector < vector < bool > > & out, int cur, vector< p
 	for (int i = 0; i < size; i++) {
 		if (i != prev && out[cur][i]) {
 			path.push_back(pair<int, int> (cur, i));
-			printf("Go to %d node\n", i);
 			if (dfs(g, out, i, path)) {
 				// Remove cycle
 				edge = path.back();
 				path.pop_back();
 
 				if (isRed(out, edge.first, edge.second)) {
-					printf("Remove edge (%d, %d)\n", edge.first, edge.second);
 					out[edge.first][edge.second] = false;
 				}
 				else {
@@ -64,7 +61,6 @@ bool dfs( vector< int > &g, vector < vector < bool > > & out, int cur, vector< p
 					return true;
 				}
 			}
-			printf("Return to %d node\n", cur);
 		}
 	}
 	if (check_path(out, path))
