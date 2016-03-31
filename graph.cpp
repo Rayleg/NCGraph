@@ -101,7 +101,7 @@ int main( int argc, char ** argv ) {
 
 	if (argc > 1) {
 		filename = argv[1];
-		cout << "File with graph matrix %s" << filename << endl;
+		cout << "File with graph matrix " << filename << endl;
 	}
 	ifs.open(filename);
 	if (!ifs.is_open()) {

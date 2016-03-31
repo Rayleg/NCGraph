@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <cstdlib>
+#include <cstring>
 
 using namespace std;
 
@@ -8,13 +9,20 @@ int main( int argc, char ** argv ) {
 	char filename[80];
 	int n = 0;
 
-	//if ()
-	cout << "Input filename: ";
-	cin >> filename;
-	cout << "Filename is : " << filename << endl;
-	cout << "Input N: ";
-	cin >> n;
-	cout << "N is: " << n << endl;
+	if (argc >= 3) {
+        n = atoi(argv[1]);
+        strncpy(filename, argv[2], strlen(argv[2]));
+        if (n < 0)
+            return 0;
+    }
+    else {
+    	cout << "Input filename: ";
+    	cin >> filename;
+    	cout << "Filename is : " << filename << endl;
+    	cout << "Input N: ";
+    	cin >> n;
+    	cout << "N is: " << n << endl;
+    }
 	ofstream of(filename);
 
 	if (!of.is_open()) {
