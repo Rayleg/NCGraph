@@ -8,9 +8,10 @@
 
 using namespace std;
 
-struct Mark {
-	int state; // 0 - not handled, 1 - in process, 2 - handled
-	Mark() : state(0) {}
+struct RedEdge {
+	int state; // 0 - direct, 1 - invert
+	int from, to;
+	RedEdge(int f = -1, int t = -1, int st = 0) : state(st), from(f), to(t) {}
 };
 
 bool isRed( const vector < vector < bool >  > &g, int i, int j ) {
@@ -30,52 +31,50 @@ bool check_path( const vector < vector < bool >  > &g, vector< pair<int, int> > 
 	return false;
 }
 
-bool dfs( vector< int > &g, vector < vector < bool > > & out, int cur, vector< pair<int, int> > &path ) {
+// True if cycle exist
+bool dfs( vector< int > &used, vector < vector < bool > > & out, int cur, int prev, vector< RedEdge > &redpath, int mark ) {
 	int size = out.size();
-	int prev = -1;
 
-	if (!path.empty())
-		prev = path.back().first;
-	if (g[cur] == 1) {
-		g[cur] = 0;
+	if (used[cur] == mark) {
 		return true;
 	}
-	if (g[cur] == 2)
-		return false;
-	// g[cur] == 0
-	g[cur] = 1;
-	pair< int, int > edge;
+	used[cur] = mark;
+
 	for (int i = 0; i < size; i++) {
 		if (i != prev && out[cur][i]) {
-			path.push_back(pair<int, int> (cur, i));
-			if (dfs(g, out, i, path)) {
+			// We can go into
+			bool isred =  isRed(out, cur, i);
+			if (isred)
+				redpath.push_back(RedEdge(cur, i, 0));
+			if (dfs(used, out, i, cur, redpath, mark)) {
 				// Remove cycle
-				edge = path.back();
-				path.pop_back();
-
-				if (isRed(out, edge.first, edge.second)) {
-					out[edge.first][edge.second] = false;
+				if (isred) {
+					out[edge.from][edge.to] = false;
+					// TODO
 				}
 				else {
-					g[cur] = 0;
+					used[cur] = !mark;
+					for (int j = 0; j < i; j++)
+						dfs(used, out, j, cur, redpath, !mark);
 					return true;
+
 				}
 			}
+			if (isRed(out, cur, i))
+				redpath.pop_back();
+
 		}
 	}
-	if (check_path(out, path))
-		g[cur] = 0;
-	else
-		g[cur] = 2;
 	return false;
 }
 
 bool solve(const vector < vector < bool >  > &in, vector < vector < bool > > & out) {
 	int size = in.size();
-	vector < int > g(size);
+	vector < int > used;
 	vector< pair < int, int > > path;
 	//std::vector< std::vector<bool> > ;
 
+	used.resize(size);
 	for (int i = 0; i < size; i++)
 	 	g[i] = 0;
 	out = in;
